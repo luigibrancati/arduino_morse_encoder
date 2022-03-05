@@ -129,7 +129,7 @@ void end_comm() {
 }
 
 void setup() {
-  Serial.begin(9600);
+  Serial.begin(115200);
   pinMode(OUT_PIN, OUTPUT);
   pinMode(END_PIN, OUTPUT);
   digitalWrite(OUT_PIN, LOW);

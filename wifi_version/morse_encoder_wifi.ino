@@ -1,3 +1,4 @@
+#include "include/memory_utils.h"
 #include "include/morse_utils.h"
 #include "include/wifi_utils.h"
 
@@ -6,6 +7,7 @@ const short OUT_PIN = 23;
 const short START_END_PIN = 22;
 const int uS_TO_S_FACTOR = 1000000;  /* Conversion factor for micro seconds to seconds */
 const int TIME_TO_SLEEP = 300;
+RTC_DATA_ATTR int bootCount = 0;
 
 void print_wakeup_reason(){
   esp_sleep_wakeup_cause_t wakeup_reason;
@@ -30,9 +32,12 @@ void setup() {
   digitalWrite(OUT_PIN, LOW);
   digitalWrite(START_END_PIN, LOW);
   print_wakeup_reason();
+  // Increase boot count
+  ++bootCount;
+  Serial.println("Boot number: " + String(bootCount));
+  // Setup wakeup reason
   esp_sleep_enable_timer_wakeup(TIME_TO_SLEEP * uS_TO_S_FACTOR);
   Serial.println("Setup ESP32 to sleep for every " + String(TIME_TO_SLEEP) + " Seconds");
-
   // Fetch message
   String text = fetchMessageFromServer();
   if(text.length()==0){
@@ -53,10 +58,9 @@ void setup() {
   morse_to_led(morse_text, OUT_PIN);
   morse_text.clear();
   delay(2000);
-  
   // End communications
   end_comm(START_END_PIN);
-  Serial.println("Going into deep sleep");
+  Serial.println("Going into deep sleep for "+String(TIME_TO_SLEEP)+" seconds");
   esp_deep_sleep_start();
 }
 

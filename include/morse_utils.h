@@ -1,8 +1,6 @@
 #ifndef _MORSE_UTILS_H
 #define _MORSE_UTILS_H
 
-#include "memory_utils.h"
-
 const short dot_time = 300; // Time LED is ON for dot
 const short dash_time = dot_time * 3; // Time LED is ON for dash
 const short same_letter_space = dot_time; // Time LED is OFF between dots/dashes of the same letter

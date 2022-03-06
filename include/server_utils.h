@@ -1,7 +1,7 @@
 #ifndef _WIFI_SERVER_UTILS_H
 #define _WIFI_SERVER_UTILS_H
 
-#include "./memory_utils.h"
+#include "memory_utils.h"
 #include <WiFi.h>
 #include <WebServer.h>
 #include <ArduinoJson.h>

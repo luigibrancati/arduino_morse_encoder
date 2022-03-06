@@ -1,48 +1,26 @@
 #include "morse_utils.h"
 #include "server_utils.h"
-#include <HTTPClient.h>
-#include <ArduinoJson.h>
 
-#define OUT_PIN 23
-#define START_END_PIN 22
 
-StaticJsonDocument<250> jsonDocument;
+const short OUT_PIN = 23;
+const short START_END_PIN = 22;
+const int uS_TO_S_FACTOR = 1000000;  /* Conversion factor for micro seconds to seconds */
+const int TIME_TO_SLEEP = 300;
 
-String fetchMessageFromServer(){
-  connectToWiFi();
-  String returnString = "";
-  if(WiFi.status()==WL_CONNECTED){
-    HTTPClient http;
-    
-    // Your Domain name with URL path or IP address with path
-    String serverPath = "http://"+String(serverIP.toString())+":"+serverPort+"/message";
-    http.begin(serverPath);
-    
-    // Send HTTP GET request
-    Serial.println("Fetching message from server "+serverPath);
-    int httpResponseCode = http.GET();
-    
-    if (httpResponseCode==200) {
-      Serial.print("HTTP Response code: ");
-      Serial.println(httpResponseCode);
-      String payload = http.getString();
-      deserializeJson(jsonDocument, payload);
-      String message = jsonDocument["message"];
-      Serial.println(message);
-      returnString = message;
-    }
-    else {
-      Serial.print("Error code: ");
-      Serial.println(httpResponseCode);
-    }
-    // Free resources
-    http.end();
+void print_wakeup_reason(){
+  esp_sleep_wakeup_cause_t wakeup_reason;
+
+  wakeup_reason = esp_sleep_get_wakeup_cause();
+
+  switch(wakeup_reason)
+  {
+    case ESP_SLEEP_WAKEUP_EXT0 : Serial.println("Wakeup caused by external signal using RTC_IO"); break;
+    case ESP_SLEEP_WAKEUP_EXT1 : Serial.println("Wakeup caused by external signal using RTC_CNTL"); break;
+    case ESP_SLEEP_WAKEUP_TIMER : Serial.println("Wakeup caused by timer"); break;
+    case ESP_SLEEP_WAKEUP_TOUCHPAD : Serial.println("Wakeup caused by touchpad"); break;
+    case ESP_SLEEP_WAKEUP_ULP : Serial.println("Wakeup caused by ULP program"); break;
+    default : Serial.printf("Wakeup was not caused by deep sleep: %d\n",wakeup_reason); break;
   }
-  else {
-    Serial.println("WiFi Disconnected");
-  }
-  endWifi();
-  return returnString;
 }
 
 void setup() {
@@ -51,16 +29,16 @@ void setup() {
   pinMode(START_END_PIN, OUTPUT);
   digitalWrite(OUT_PIN, LOW);
   digitalWrite(START_END_PIN, LOW);
-}
+  print_wakeup_reason();
+  esp_sleep_enable_timer_wakeup(TIME_TO_SLEEP * uS_TO_S_FACTOR);
+  Serial.println("Setup ESP32 to sleep for every " + String(TIME_TO_SLEEP) + " Seconds");
 
-void loop ()
-{
   // Fetch message
   String text = fetchMessageFromServer();
   if(text.length()==0){
     // If the server didn't return a message, use the last read message in memory
     Serial.println("No message from server, fetching last read message from memory");
-    text = readMessage("aaa");
+    text = readMessage("");
   }
   else{
     // If the server returned a message, upload the last read message in memory
@@ -78,5 +56,11 @@ void loop ()
   
   // End communications
   end_comm(START_END_PIN);
-  delay(2000);
+  Serial.println("Going into deep sleep");
+  esp_deep_sleep_start();
+}
+
+void loop ()
+{
+  // Not going to be called
 }

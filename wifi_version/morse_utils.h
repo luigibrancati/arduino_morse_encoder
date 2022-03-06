@@ -19,7 +19,7 @@ const char* morse_table_letters[] = {".-", "-...", "-.-.", "-..", ".", "..-.", "
   ".-.", "...", "-", "..-", "...-", ".--", "-..-", "-.--", "--.."};
 const char* morse_table_digits[] = {"-----", ".----", "..---", "...--", "....-", ".....", "-....", "--...", "---..", "----."};
 
-const char* letter_encoder(char letter) {
+const char* letter_encoder(const char letter) {
   int letter_value = (int) letter;
   if (letter_value >= 97 && letter_value <= 122) {
     //lowercase
@@ -70,7 +70,7 @@ String text_to_morse(const String text) {
   return morse;
 }
 
-void morse_to_led(const String text_morse, int out_pin) {
+void morse_to_led(const String text_morse, const short out_pin) {
   Serial.println("Flashing morse with pins");
   for (int l = 0; l < text_morse.length(); l++) {
     char letter = text_morse.charAt(l);
@@ -101,14 +101,14 @@ void morse_to_led(const String text_morse, int out_pin) {
   }
 }
 
-void start_comm(int end_pin) {
+void start_comm(const short end_pin) {
   Serial.println("Start comm.");
   digitalWrite(end_pin, HIGH);
   delay(dash_time);
   digitalWrite(end_pin, LOW);
 }
 
-void end_comm(int end_pin) {
+void end_comm(const short end_pin) {
   Serial.println("End comm.");
   digitalWrite(end_pin, HIGH);
   delay(dot_time);
@@ -121,7 +121,7 @@ void end_comm(int end_pin) {
 
 // Memory
 
-String readMessage(String def){
+String readMessage(const String def){
   preferences.begin(prefNamespace);
   if(preferences.isKey(varName)){
     Serial.println(String(varName)+" key found");
@@ -134,7 +134,7 @@ String readMessage(String def){
   preferences.end();
 }
 
-void setMessage(String newValue){
+void setMessage(const String newValue){
   preferences.begin(prefNamespace);
   String oldValue = readMessage("");
   if(newValue != oldValue){

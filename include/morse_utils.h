@@ -1,11 +1,8 @@
 #ifndef _MORSE_UTILS_H
 #define _MORSE_UTILS_H
 
-#include <Preferences.h>
+#include "memory_utils.h"
 
-Preferences preferences;
-const char* prefNamespace = "message";
-const char* varName = "messagevar";
 const short dot_time = 300; // Time LED is ON for dot
 const short dash_time = dot_time * 3; // Time LED is ON for dash
 const short same_letter_space = dot_time; // Time LED is OFF between dots/dashes of the same letter
@@ -117,34 +114,6 @@ void end_comm(const short end_pin) {
   digitalWrite(end_pin, HIGH);
   delay(dot_time);
   digitalWrite(end_pin, LOW);
-}
-
-// Memory
-
-String readMessage(const String def){
-  preferences.begin(prefNamespace);
-  if(preferences.isKey(varName)){
-    Serial.println(String(varName)+" key found");
-    return preferences.getString(varName);
-  }
-  else{
-    Serial.println(String(varName)+" key not found, returning default value "+def);
-    return def;
-  }
-  preferences.end();
-}
-
-void setMessage(const String newValue){
-  preferences.begin(prefNamespace);
-  String oldValue = readMessage("");
-  if(newValue != oldValue){
-    Serial.println("Updating last read message!");
-    preferences.putString(varName, newValue);
-  }
-  else{
-    Serial.println("Last read message is the same, not updating it in memory");
-  }
-  preferences.end();
 }
 
 #endif

@@ -5,9 +5,8 @@
 
 const short OUT_PIN = 23;
 const short START_END_PIN = 22;
-const int uS_TO_S_FACTOR = 1000000;  /* Conversion factor for micro seconds to seconds */
-const int TIME_TO_SLEEP = 300;
-RTC_DATA_ATTR int bootCount = 0;
+const int uS_TO_mS_FACTOR = 1000;  // Conversion factor for micro seconds to milli seconds
+RTC_DATA_ATTR int bootCount = 0; // Boot count
 
 void print_wakeup_reason(){
   esp_sleep_wakeup_cause_t wakeup_reason;
@@ -36,8 +35,8 @@ void setup() {
   ++bootCount;
   Serial.println("Boot number: " + String(bootCount));
   // Setup wakeup reason
-  esp_sleep_enable_timer_wakeup(TIME_TO_SLEEP * uS_TO_S_FACTOR);
-  Serial.println("Setup ESP32 to sleep for every " + String(TIME_TO_SLEEP) + " Seconds");
+  esp_sleep_enable_timer_wakeup(time_between_broadcasts * uS_TO_mS_FACTOR);
+  Serial.println("Setup ESP32 to sleep for every " + String(time_between_broadcasts/1000) + " Seconds");
   // Fetch message
   String text = fetchMessageFromServer();
   if(text.length()==0){
@@ -52,15 +51,15 @@ void setup() {
   }
   // Start communications
   start_comm(START_END_PIN);
-  delay(2000);
+  delay(time_delay);
   Serial.println("Sending message: "+text);
   String morse_text = text_to_morse(text);
   morse_to_led(morse_text, OUT_PIN);
   morse_text.clear();
-  delay(2000);
+  delay(time_delay);
   // End communications
   end_comm(START_END_PIN);
-  Serial.println("Going into deep sleep for "+String(TIME_TO_SLEEP)+" seconds");
+  Serial.println("Going into deep sleep for "+String(time_between_broadcasts/1000)+" seconds");
   esp_deep_sleep_start();
 }
 

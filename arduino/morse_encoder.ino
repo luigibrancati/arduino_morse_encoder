@@ -23,5 +23,6 @@ void loop ()
   delay(time_delay);
   // End communications
   end_comm(START_END_PIN);
+  Serial.println("Waiting "+String(time_between_broadcasts/1000)+" seconds before broadcasting again");
   delay(time_between_broadcasts);
 }

@@ -15,13 +15,13 @@ void loop ()
 {
   //Start
   start_comm(START_END_PIN);
-  delay(2000);
+  delay(time_delay);
   //Convert
   String text = "test";
   String morse_text = text_to_morse(text);
   morse_to_led(morse_text, OUT_PIN);
-  delay(2000);
+  delay(time_delay);
   // End communications
   end_comm(START_END_PIN);
-  delay(10000);
+  delay(time_between_broadcasts);
 }

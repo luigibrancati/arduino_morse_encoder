@@ -1,6 +1,8 @@
 #ifndef _MORSE_UTILS_H
 #define _MORSE_UTILS_H
 
+// All times are in milliseconds
+const short time_between_broadcasts = 10000; // Time between two consecutive transmissions of the message
 const short dot_time = 300; // Time LED is ON for dot
 const short dash_time = dot_time * 3; // Time LED is ON for dash
 const short same_letter_space = dot_time; // Time LED is OFF between dots/dashes of the same letter

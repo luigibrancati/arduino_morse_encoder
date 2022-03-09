@@ -21,7 +21,7 @@ String readMessage(const String def){
   preferences.end();
 }
 
-bool setMessage(const String newValue){
+bool updateMessage(const String newValue){
   preferences.begin(prefNamespace);
   String oldValue = readMessage("");
   bool outcome = false;

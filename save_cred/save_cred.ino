@@ -1,8 +1,8 @@
 
 #include "include/memory_utils.h"
 
-const char* SSID = "FASTWEB-M4TDm4-2.4GHZ";
-const char* PWD = "6j6dP38v22";
+const char* SSID = "YOUR_SSID";
+const char* PWD = "YOUR_PWD";
 
 void setup(){
     Serial.begin(115200);

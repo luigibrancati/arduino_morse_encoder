@@ -7,8 +7,6 @@
 #include <ArduinoJson.h>
 #include <Preferences.h>
 
-const char* SSID = "YOUR_SSID";
-const char* PWD = "YOUR_PASSWORD";
 const String serverHostname = "esp32";
 const int serverPort = 80;
 // Set your Static IP address
@@ -23,10 +21,12 @@ StaticJsonDocument<250> responseJson;
 char buffer[250];
 
 void connectToWiFi() {
+  preferences.begin(credentialsNamespace);
   Serial.print("Connecting to ");
-  Serial.println(SSID);
-  
-  WiFi.begin(SSID, PWD);
+  Serial.println(preferences.getString("ssid"));
+
+  WiFi.begin(preferences.getString("ssid").c_str(), preferences.getString("pwd").c_str());
+  preferences.end();
   
   while (WiFi.status() != WL_CONNECTED) {
       Serial.print(".");
@@ -55,19 +55,27 @@ void getMessage(){
 }
 
 void updateMessage(){
-  Serial.println("Setting message");
+  Serial.println("Updating message");
   if (server.hasArg("plain") == false) {
     Serial.println("Wrong json body!");
-    server.send(400, "application/text", "The request isn't as expected, please send a JSON formatted request with just a message field.");
+    server.send(400, "application/json", "{}");
   }
   String body = server.arg("plain");
   deserializeJson(responseJson, body);
-  if(setMessage(responseJson["message"])){
-    server.send(200, "application/json", "{}");
+  if(!responseJson.containsKey("message")){
+    Serial.println("Wrong json body! Missing message field.");
+    server.send(400, "application/json", "Request missing message key.");
+    return;
   }
   else{
-    Serial.println("Last read message is the same, not updating it in memory");
-    server.send(200, "application/json", "Last read message is the same, not updating it in memory");
+    if(setMessage(responseJson["message"])){
+      Serial.println("Setting message");
+      server.send(200, "application/json", "{}");
+    }
+    else{
+      Serial.println("Last read message is the same, not updating it in memory");
+      server.send(200, "application/json", "Last read message is the same, not updating it in memory.");
+    }
   }
 }
 

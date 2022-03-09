@@ -47,7 +47,7 @@ void setup() {
   else{
     // If the server returned a message, upload the last read message in memory
     Serial.println("Message from server not empty, updating last read message in memory");
-    setMessage(text);
+    updateMessage(text);
   }
   // Start communications
   start_comm(START_END_PIN);

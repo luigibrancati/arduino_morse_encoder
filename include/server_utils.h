@@ -47,14 +47,14 @@ void createJson(String message) {
   serializeJson(responseJson, buffer);
 }
 
-void getMessage(){
+void getServerMessage(){
   Serial.println("Getting message");
   String message = readMessage("");
   createJson(message);
   server.send(200, "application/json", buffer);
 }
 
-void updateMessage(){
+void updateServerMessage(){
   Serial.println("Updating message");
   if (server.hasArg("plain") == false) {
     Serial.println("Wrong json body!");
@@ -68,7 +68,7 @@ void updateMessage(){
     return;
   }
   else{
-    if(setMessage(responseJson["message"])){
+    if(updateMessage(responseJson["message"])){
       Serial.println("Setting message");
       server.send(200, "application/json", "{}");
     }
@@ -82,8 +82,8 @@ void updateMessage(){
 void setupRouting() {
   //Sets a server routing so that each endpoint is assigned to an handler
   // Message
-  server.on("/message", getMessage);
-  server.on("/message/set", HTTP_POST, updateMessage);
+  server.on("/message", getServerMessage);
+  server.on("/message/set", HTTP_POST, updateServerMessage);
   // start server
   server.begin();
 }

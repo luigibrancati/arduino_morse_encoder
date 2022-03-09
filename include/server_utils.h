@@ -58,7 +58,7 @@ void updateMessage(){
   Serial.println("Setting message");
   if (server.hasArg("plain") == false) {
     Serial.println("Wrong json body!");
-    return;
+    server.send(400, "application/text", "The request isn't as expected, please send a JSON formatted request with just a message field.");
   }
   String body = server.arg("plain");
   deserializeJson(responseJson, body);

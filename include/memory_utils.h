@@ -4,6 +4,7 @@
 #include <Preferences.h>
 
 Preferences preferences;
+const char* credentialsNamespace = "credentials";
 const char* prefNamespace = "message";
 const char* varName = "messagevar";
 
@@ -30,7 +31,7 @@ bool setMessage(const String newValue){
     outcome = true;
   }
   else{
-    Serial.println("Last read message is the same, not updating it in memory");
+    Serial.println("Last message is the same, not updating it in memory");
   }
   preferences.end();
   return outcome;
